@@ -64,6 +64,7 @@ export type WheelPickerProps<T> = {
   className?: string
   enableVibration?: boolean
   isOptionEqual?: (candidate: T, value: T) => boolean
+  getOptionKey?: (option: T, index: number) => React.Key
   renderLabel?: (option: T, index: number) => React.ReactNode
   onChange?: (option: T, index: number) => void
 }
@@ -83,6 +84,7 @@ export function WheelPicker<T>({
   transitionDuration = DEFAULT_TRANSITION_DURATION,
   enableVibration = false,
   isOptionEqual,
+  getOptionKey,
   renderLabel,
   onChange,
 }: WheelPickerProps<T>) {
@@ -384,6 +386,9 @@ export function WheelPicker<T>({
           <div className='wheel-picker__selection-shadow' aria-hidden='true' />
           <div ref={columnRef} className='wheel-picker__column'>
             {options.map((option, index) => {
+              const key =
+                getOptionKey?.(option, index) ??
+                (typeof option === 'string' || typeof option === 'number' ? option : index)
               const label = renderLabel ? renderLabel(option, index) : String(option)
               const offset = selectedIndex >= 0 ? index - selectedIndex : 0
               const isSelected = offset === 0
@@ -404,7 +409,7 @@ export function WheelPicker<T>({
               }
               return (
                 <div
-                  key={index}
+                  key={key}
                   className='wheel-picker__option'
                   style={{
                     opacity,

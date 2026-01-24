@@ -55,6 +55,7 @@ type WheelPickerProps<T> = {
   className?: string
   enableVibration?: boolean
   isOptionEqual?: (candidate: T, value: T) => boolean
+  getOptionKey?: (option: T, index: number) => React.Key
   renderLabel?: (option: T, index: number) => React.ReactNode
   onChange?: (option: T, index: number) => void
 }
@@ -71,6 +72,7 @@ Notes:
 - `visibleCount` is coerced to an odd number for centering.
 - `transitionDuration` is the selection animation in milliseconds.
 - `isOptionEqual` custom equality check for controlled values.
+- `getOptionKey` sets stable keys when options are objects or non-unique labels.
 - `renderLabel` custom render for each option (defaults to `String(option)`).
 - `onChange` fires on selection change with `(option, index)`.
 - `enableVibration` uses `navigator.vibrate` and only works on supported mobile browsers.
