@@ -1,5 +1,5 @@
 {
-  "name": "react-ios-wheel-picker",
+  "name": "@charon676/react-ios-wheel-picker",
   "description": "A customizable wheel picker component for React",
   "version": "0.1.0",
   "author": "charon616",
@@ -15,15 +15,18 @@
     "react-ios-wheel-picker",
     "number-picker"
   ],
-  "main": "dist/wheel-picker.js",
-  "module": "dist/wheel-picker.js",
+  "main": "dist/wheel-picker.umd.js",
+  "module": "dist/wheel-picker.mjs",
   "types": "dist/WheelPicker.d.ts",
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "style": "dist/wheel-picker.css",
   "sideEffects": [
-    "lib/WheelPicker.css"
+    "dist/wheel-picker.css"
   ],
   "readme": "README.md",
   "private": false,

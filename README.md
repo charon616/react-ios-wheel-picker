@@ -13,14 +13,14 @@ A customizable, smooth wheel picker component for React with TypeScript support.
 ## Installation
 
 ```bash
-npm install react-ios-wheel-picker
+npm install @charon676/react-ios-wheel-picker
 ```
 
 ## Usage
 
 ```tsx
-import { WheelPicker } from 'react-ios-wheel-picker'
-import 'react-ios-wheel-picker/dist/wheel-picker.css'
+import { WheelPicker } from '@charon676/react-ios-wheel-picker'
+import '@charon676/react-ios-wheel-picker/dist/wheel-picker.css'
 
 const options = ['A', 'B', 'C']
 
@@ -109,7 +109,7 @@ Available classes:
 
 ## Demo
 
-https://charon616.github.io/react-ios-wheel-picker/
+https://heygood.net/react-ios-wheel-picker/
 
 ## Build
 
