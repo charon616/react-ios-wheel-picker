@@ -29,7 +29,10 @@
   "private": false,
   "scripts": {
     "dev": "vite",
+    "dev:demo": "vite --config vite.demo.config.ts",
     "build": "vite build",
+    "build:demo": "vite build --config vite.demo.config.ts",
+    "preview:demo": "vite preview --config vite.demo.config.ts",
     "watch": "vite build --watch",
     "prepare": "npm run build"
   },
