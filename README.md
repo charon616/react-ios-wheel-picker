@@ -1,73 +1,122 @@
-# React + TypeScript + Vite
+# React iOS Wheel Picker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A customizable, smooth wheel picker component for React with TypeScript support.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Touch-friendly wheel interactions with drag and scroll
+- Looping, arrows, and custom label rendering
+- Adjustable row height, font size, and visible count
+- Optional mobile vibration feedback
+- Controlled and uncontrolled usage
 
-## React Compiler
+## Installation
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install react-ios-wheel-picker
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Usage
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```tsx
+import { WheelPicker } from 'react-ios-wheel-picker'
+import 'react-ios-wheel-picker/dist/wheel-picker.css'
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+const options = ['A', 'B', 'C']
+
+export const Example = () => (
+  <WheelPicker
+    options={options}
+    defaultIndex={0}
+    loop
+    enableVibration
+    onChange={(option, index) => {
+      console.log(option, index)
+    }}
+  />
+)
 ```
+
+## Props
+
+```ts
+type WheelPickerProps<T> = {
+  options: readonly T[]
+  value?: T
+  defaultIndex?: number
+  loop?: boolean
+  showArrows?: boolean
+  draggable?: boolean
+  wheelSensitivity?: number
+  visibleCount?: number
+  optionHeight?: number | string
+  fontSize?: number | string
+  transitionDuration?: number
+  className?: string
+  enableVibration?: boolean
+  isOptionEqual?: (candidate: T, value: T) => boolean
+  renderLabel?: (option: T, index: number) => React.ReactNode
+  onChange?: (option: T, index: number) => void
+}
+```
+
+Notes:
+
+- `value` makes the component controlled. Use `defaultIndex` for uncontrolled usage.
+- `defaultIndex` sets the initial selection when uncontrolled.
+- `loop` wraps from end to start and vice versa.
+- `showArrows` toggles the up/down buttons.
+- `draggable` enables pointer/touch dragging.
+- `wheelSensitivity` scales wheel/trackpad input; higher is faster.
+- `visibleCount` is coerced to an odd number for centering.
+- `transitionDuration` is the selection animation in milliseconds.
+- `isOptionEqual` custom equality check for controlled values.
+- `renderLabel` custom render for each option (defaults to `String(option)`).
+- `onChange` fires on selection change with `(option, index)`.
+- `enableVibration` uses `navigator.vibrate` and only works on supported mobile browsers.
+- `optionHeight` and `fontSize` accept numbers (treated as `rem`) or CSS lengths.
+
+## Styling
+
+You can override styles by targeting the classes or by setting CSS variables on the root element.
+
+```tsx
+<WheelPicker className="my-wheel" />
+```
+
+```css
+.my-wheel {
+  --wheel-option-height: 3rem;
+  --wheel-selection-window-height: var(--wheel-option-height);
+  --wheel-option-spacing: 0.2rem;
+  --wheel-font-size: 1.75rem;
+  --wheel-viewport-height: calc(5 * var(--wheel-option-height) + 4 * var(--wheel-option-spacing));
+  --foreground: #e5e7eb;
+  --background: #0b0e14;
+}
+```
+
+Available classes:
+
+- `.wheel-picker`
+- `.wheel-picker__controls`
+- `.wheel-picker__button`
+- `.wheel-picker__viewport`
+- `.wheel-picker__selection-window`
+- `.wheel-picker__selection-shadow`
+- `.wheel-picker__column`
+- `.wheel-picker__option`
+
+## Demo
+
+https://charon616.github.io/react-ios-wheel-picker/
+
+## Build
+
+```bash
+npm run build
+```
+
+## License
+
+MIT

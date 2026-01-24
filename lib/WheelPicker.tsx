@@ -62,6 +62,7 @@ export type WheelPickerProps<T> = {
   fontSize?: number | string
   transitionDuration?: number
   className?: string
+  enableVibration?: boolean
   isOptionEqual?: (candidate: T, value: T) => boolean
   renderLabel?: (option: T, index: number) => React.ReactNode
   onChange?: (option: T, index: number) => void
@@ -80,6 +81,7 @@ export function WheelPicker<T>({
   wheelSensitivity = 1,
   draggable = true,
   transitionDuration = DEFAULT_TRANSITION_DURATION,
+  enableVibration = false,
   isOptionEqual,
   renderLabel,
   onChange,
@@ -155,7 +157,7 @@ export function WheelPicker<T>({
   }, [optionHeight])
   const fontSizeValue = useMemo(() => {
     const length = toCssLength(fontSize, 'rem')
-    return length || '2rem'
+    return length || '1.75rem'
   }, [fontSize])
   const viewportHeightValue = useMemo(() => {
     const gaps = Math.max(resolvedVisibleCount - 1, 0)
@@ -260,9 +262,13 @@ export function WheelPicker<T>({
       if (!isControlled) {
         setUncontrolledIndex(next)
       }
+      // Vibration feedback for mobile devices
+      if (enableVibration && typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+        navigator.vibrate(10) // Short 10ms vibration
+      }
       onChange?.(options[next], next)
     },
-    [alignColumn, isControlled, loop, onChange, options],
+    [alignColumn, enableVibration, isControlled, loop, onChange, options],
   )
 
   const handleWheel = useCallback(

@@ -3,24 +3,35 @@
   "description": "A customizable wheel picker component for React",
   "version": "0.1.0",
   "author": "charon616",
-  "license": "MIT",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "style": "dist/wheel-picker.css",
-  "readme": "README.md",
-  "files": ["dist", "README.md"],
-  "publishConfig": {
-    "access": "public"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/charon616/react-ios-wheel-picker.git"
   },
+  "license": "MIT",
+  "keywords": [
+    "react",
+    "wheel-picker",
+    "ios-wheel-picker",
+    "react-ios-wheel-picker",
+    "number-picker"
+  ],
+  "main": "dist/wheel-picker.js",
+  "module": "dist/wheel-picker.js",
+  "types": "dist/WheelPicker.d.ts",
+  "files": [
+    "dist"
+  ],
+  "style": "dist/wheel-picker.css",
+  "sideEffects": [
+    "lib/WheelPicker.css"
+  ],
+  "readme": "README.md",
+  "private": false,
   "scripts": {
     "dev": "vite",
-    "build": "npm run build:lib && vite build",
-    "build:lib": "tsc -p tsconfig.json",
-    "prepare": "npm run build",
-    "lint": "eslint .",
-    "preview": "vite preview",
-    "prepublishOnly": "npm run build"
+    "build": "vite build",
+    "watch": "vite build --watch",
+    "prepare": "npm run build"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
@@ -40,6 +51,7 @@
     "react-dom": "^19.2.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
-    "vite": "^7.2.4"
+    "vite": "^7.2.4",
+    "vite-plugin-dts": "^4.5.4"
   }
 }

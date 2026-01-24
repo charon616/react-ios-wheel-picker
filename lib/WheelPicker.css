@@ -9,7 +9,7 @@
   --wheel-option-height: 3rem;
   --wheel-selection-window-height: var(--wheel-option-height);
   --wheel-option-spacing: 0.2rem;
-  --wheel-font-size: 2rem;
+  --wheel-font-size: 1.75rem;
   --wheel-viewport-height: calc(5 * var(--wheel-option-height) + 4 * var(--wheel-option-spacing));
 }
 
@@ -50,12 +50,12 @@
 
 .wheel-picker__viewport {
   position: relative;
-  width: 14rem;
+  width: 10rem;
   height: var(--wheel-viewport-height, 14rem);
   max-height: 100%;
   padding: 0;
   margin: 0;
-  border-radius: 1.25rem;
+  border-radius: 0.75rem;
   border: 1px solid color-mix(in srgb, var(--foreground) 25%, transparent);
   color: var(--foreground);
   background: var(--background);
@@ -107,10 +107,10 @@
   height: var(--wheel-option-height);
   line-height: var(--wheel-option-height);
   font-size: var(--wheel-font-size);
+  font-weight: 300;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
   color: currentColor;
   transition: opacity 180ms ease, transform 200ms ease;
 }

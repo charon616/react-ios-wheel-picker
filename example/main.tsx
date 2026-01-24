@@ -32,7 +32,6 @@ const App = () => {
         alignItems: 'center',
         justifyContent: 'center',
         gap: '2rem',
-        background: 'radial-gradient(circle at top, #1d1f27, #0f1116)',
         color: '#fff',
         padding: '2rem',
       }}
@@ -59,6 +58,7 @@ const App = () => {
             visibleCount={5}
             showArrows={false}
             wheelSensitivity={0.7}
+            fontSize={1.75}
             onChange={(option) => setSelectedYear(option)}
           />
         </div>
@@ -88,7 +88,7 @@ const App = () => {
           />
         </div>
       </div>
-      <div style={{ fontSize: '1.5rem', fontWeight: 600 }}>
+      <div style={{ fontSize: '1.25rem', fontWeight: 300 }}>
         Selected date: {selectedYear}-{String(selectedMonth).padStart(2, '0')}-{String(selectedDay).padStart(2, '0')}
       </div>
     </div>

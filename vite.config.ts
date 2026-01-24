@@ -1,15 +1,18 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import dts from "vite-plugin-dts";
+import { resolve } from "path";
+
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), dts()],
   build: {
-    emptyOutDir: false,
     lib: {
-      entry: "src/index.ts",
+      entry: resolve(__dirname, "lib/WheelPicker.tsx"),
       name: "WheelPicker",
-      fileName: "wheel-picker"
+      fileName: "wheel-picker",
+      formats: ["es", "umd"],
     },
     rollupOptions: {
       external: ["react", "react-dom"],
@@ -20,5 +23,5 @@ export default defineConfig({
         }
       }
     }
-  }
+  },
 })

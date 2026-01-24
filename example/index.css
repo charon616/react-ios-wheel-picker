@@ -1,5 +1,5 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Avenir, Helvetica, Arial, system-ui, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -9,8 +9,8 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --foreground: #242424;
-  --background: #ffffff;
+  --foreground: #fff;
+  --background: #18181b;
   --theme-mode: normal;
   color: var(--foreground);
   background-color: var(--background);
