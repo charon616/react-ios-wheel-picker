@@ -4,6 +4,8 @@
   align-items: center;
   justify-content: center;
   gap: 1rem;
+  --foreground: #18181b;
+  --background: #fff;
   color: var(--foreground);
   font-family: inherit;
   --wheel-option-height: 3rem;
@@ -69,6 +71,14 @@
   cursor: grabbing;
 }
 
+.wheel-picker__viewport--no-outline {
+  border: none;
+}
+
+.wheel-picker--no-outline .wheel-picker__button {
+  border: none;
+}
+
 .wheel-picker__selection-window {
   position: absolute;
   top: 50%;
@@ -81,6 +91,11 @@
   pointer-events: none;
   padding: 0;
   margin: 0;
+}
+
+.wheel-picker__selection-window--no-outline {
+  border-top: none;
+  border-bottom: none;
 }
 
 .wheel-picker__selection-shadow {

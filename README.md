@@ -22,7 +22,8 @@ npm install @charon676/react-ios-wheel-picker
 import { WheelPicker } from '@charon676/react-ios-wheel-picker'
 import '@charon676/react-ios-wheel-picker/dist/wheel-picker.css'
 
-const options = ['A', 'B', 'C']
+const options = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i))
+// ['A', 'B', 'C', ..., 'Z']
 
 export const Example = () => (
   <WheelPicker
@@ -37,6 +38,34 @@ export const Example = () => (
 )
 ```
 
+### Custom Arrow Example
+
+```tsx
+<WheelPicker
+  options={options}
+  showArrows
+  renderArrow={(direction) => (
+    <span style={{ fontSize: '1.5rem' }}>
+      {direction === 'up' ? '▲' : '▼'}
+    </span>
+  )}
+/>
+```
+
+Or with custom SVG icons:
+
+```tsx
+import { ChevronUp, ChevronDown } from 'lucide-react'
+
+<WheelPicker
+  options={options}
+  showArrows
+  renderArrow={(direction) => (
+    direction === 'up' ? <ChevronUp size={20} /> : <ChevronDown size={20} />
+  )}
+/>
+```
+
 ## Props
 
 ```ts
@@ -46,6 +75,7 @@ type WheelPickerProps<T> = {
   defaultIndex?: number
   loop?: boolean
   showArrows?: boolean
+  showOutline?: boolean
   draggable?: boolean
   wheelSensitivity?: number
   visibleCount?: number
@@ -57,6 +87,7 @@ type WheelPickerProps<T> = {
   isOptionEqual?: (candidate: T, value: T) => boolean
   getOptionKey?: (option: T, index: number) => React.Key
   renderLabel?: (option: T, index: number) => React.ReactNode
+  renderArrow?: (direction: 'up' | 'down') => React.ReactNode
   onChange?: (option: T, index: number) => void
 }
 ```
@@ -67,6 +98,7 @@ Notes:
 - `defaultIndex` sets the initial selection when uncontrolled.
 - `loop` wraps from end to start and vice versa.
 - `showArrows` toggles the up/down buttons.
+- `showOutline` shows/hides the border around viewport and selection window (default: `true`).
 - `draggable` enables pointer/touch dragging.
 - `wheelSensitivity` scales wheel/trackpad input; higher is faster.
 - `visibleCount` is coerced to an odd number for centering.
@@ -74,9 +106,10 @@ Notes:
 - `isOptionEqual` custom equality check for controlled values.
 - `getOptionKey` sets stable keys when options are objects or non-unique labels.
 - `renderLabel` custom render for each option (defaults to `String(option)`).
+- `renderArrow` custom render for arrow buttons (receives `'up'` or `'down'`).
 - `onChange` fires on selection change with `(option, index)`.
 - `enableVibration` uses `navigator.vibrate` and only works on supported mobile browsers.
-- `optionHeight` and `fontSize` accept numbers (treated as `rem`) or CSS lengths.
+- `optionHeight` and `fontSize` accept numbers (treated as `rem`) or CSS lengths (e.g., `fontSize={2}` → `2rem`, `fontSize="24px"` → `24px`).
 
 ## Styling
 

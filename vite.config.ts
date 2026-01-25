@@ -6,7 +6,12 @@ import { resolve } from "path";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), dts()],
+  plugins: [
+    react({
+      jsxRuntime: 'classic',
+    }),
+    dts(),
+  ],
   build: {
     lib: {
       entry: resolve(__dirname, "lib/WheelPicker.tsx"),

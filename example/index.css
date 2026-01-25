@@ -15,3 +15,8 @@
   color: var(--foreground);
   background-color: var(--background);
 }
+
+.wheel-picker {
+  --foreground: #fff;
+  --background: #18181b;
+}

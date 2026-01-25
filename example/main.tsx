@@ -1,6 +1,6 @@
 import { StrictMode, useEffect, useMemo, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import { WheelPicker } from '../src'
+import { WheelPicker } from '../lib/WheelPicker'
 import './index.css'
 
 const App = () => {

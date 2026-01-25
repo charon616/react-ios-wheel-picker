@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import * as React from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import './WheelPicker.css'
 
 // Utility to merge class names conditionally
@@ -55,6 +56,7 @@ export type WheelPickerProps<T> = {
   defaultIndex?: number
   loop?: boolean
   showArrows?: boolean
+  showOutline?: boolean
   draggable?: boolean
   wheelSensitivity?: number
   visibleCount?: number
@@ -66,6 +68,7 @@ export type WheelPickerProps<T> = {
   isOptionEqual?: (candidate: T, value: T) => boolean
   getOptionKey?: (option: T, index: number) => React.Key
   renderLabel?: (option: T, index: number) => React.ReactNode
+  renderArrow?: (direction: 'up' | 'down') => React.ReactNode
   onChange?: (option: T, index: number) => void
 }
 
@@ -77,6 +80,7 @@ export function WheelPicker<T>({
   className,
   visibleCount = 5,
   showArrows = true,
+  showOutline = true,
   optionHeight = '3rem',
   fontSize = '2rem',
   wheelSensitivity = 1,
@@ -86,6 +90,7 @@ export function WheelPicker<T>({
   isOptionEqual,
   getOptionKey,
   renderLabel,
+  renderArrow,
   onChange,
 }: WheelPickerProps<T>) {
   const equals = useMemo(() => isOptionEqual ?? defaultEquals<T>, [isOptionEqual])
@@ -365,7 +370,7 @@ export function WheelPicker<T>({
   }, [changeSelection, draggable, ensureMeasurements])
 
   return (
-    <div className={mergeClasses('wheel-picker', className)} style={pickerStyle}>
+    <div className={mergeClasses('wheel-picker', !showOutline && 'wheel-picker--no-outline', className)} style={pickerStyle}>
       <div ref={containerRef} className='wheel-picker__controls'>
         {showArrows && (
           <button
@@ -375,14 +380,24 @@ export function WheelPicker<T>({
             className='wheel-picker__button'
             aria-label='Previous option'
           >
-            <ArrowIcon direction='up' />
+            {renderArrow ? renderArrow('up') : <ArrowIcon direction='up' />}
           </button>
         )}
         <div
-          className={mergeClasses('wheel-picker__viewport', draggable && isPointerDragging && 'wheel-picker__viewport--dragging')}
+          className={mergeClasses(
+            'wheel-picker__viewport',
+            draggable && isPointerDragging && 'wheel-picker__viewport--dragging',
+            !showOutline && 'wheel-picker__viewport--no-outline'
+          )}
           onPointerDown={draggable ? handlePointerDown : undefined}
         >
-          <div className='wheel-picker__selection-window' aria-hidden='true' />
+          <div
+            className={mergeClasses(
+              'wheel-picker__selection-window',
+              !showOutline && 'wheel-picker__selection-window--no-outline'
+            )}
+            aria-hidden='true'
+          />
           <div className='wheel-picker__selection-shadow' aria-hidden='true' />
           <div ref={columnRef} className='wheel-picker__column'>
             {options.map((option, index) => {
@@ -430,7 +445,7 @@ export function WheelPicker<T>({
             className='wheel-picker__button'
             aria-label='Next option'
           >
-            <ArrowIcon direction='down' />
+            {renderArrow ? renderArrow('down') : <ArrowIcon direction='down' />}
           </button>
         )}
       </div>

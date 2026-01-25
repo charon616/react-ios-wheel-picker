@@ -7,6 +7,9 @@ export default defineConfig({
   root: 'example',
   base: '/react-ios-wheel-picker/',
   plugins: [react()],
+  resolve: {
+    dedupe: ['react', 'react-dom'],
+  },
   server: {
     fs: {
       allow: [resolve(__dirname, '.')],
