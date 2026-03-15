@@ -1,7 +1,7 @@
 {
   "name": "@charon676/react-ios-wheel-picker",
   "description": "A customizable wheel picker component for React",
-  "version": "0.1.6",
+  "version": "0.1.8",
   "author": "charon616",
   "repository": {
     "type": "git",

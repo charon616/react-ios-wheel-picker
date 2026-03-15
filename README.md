@@ -8,6 +8,7 @@ A customizable, smooth wheel picker component for React with TypeScript support.
 - Looping, arrows, and custom label rendering
 - Adjustable row height, font size, and visible count
 - Optional mobile vibration feedback
+- Limit selectable options with a predicate
 - Controlled and uncontrolled usage
 
 ## Installation
@@ -85,6 +86,7 @@ type WheelPickerProps<T> = {
   className?: string
   enableVibration?: boolean
   isOptionEqual?: (candidate: T, value: T) => boolean
+  validOptionIndex?: (index: number, option: T) => boolean
   getOptionKey?: (option: T, index: number) => React.Key
   renderLabel?: (option: T, index: number) => React.ReactNode
   renderArrow?: (direction: 'up' | 'down') => React.ReactNode
@@ -110,6 +112,19 @@ Notes:
 - `onChange` fires on selection change with `(option, index)`.
 - `enableVibration` uses `navigator.vibrate` and only works on supported mobile browsers.
 - `optionHeight` and `fontSize` accept numbers (treated as `rem`) or CSS lengths (e.g., `fontSize={2}` → `2rem`, `fontSize="24px"` → `24px`).
+- `validOptionIndex` limits which items are selectable; return `true` to allow selection.
+
+### Limit selectable options
+
+```tsx
+const years = Array.from({ length: 15 }, (_, i) => 2012 + i)
+
+<WheelPicker
+  options={years}
+  defaultIndex={0}
+  validOptionIndex={(_, option) => option === 2014 || option === 2020}
+/>
+```
 
 ## Styling
 

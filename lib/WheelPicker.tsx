@@ -66,6 +66,7 @@ export type WheelPickerProps<T> = {
   className?: string
   enableVibration?: boolean
   isOptionEqual?: (candidate: T, value: T) => boolean
+  validOptionIndex?: (index: number, option: T) => boolean
   getOptionKey?: (option: T, index: number) => React.Key
   renderLabel?: (option: T, index: number) => React.ReactNode
   renderArrow?: (direction: 'up' | 'down') => React.ReactNode
@@ -88,6 +89,7 @@ export function WheelPicker<T>({
   transitionDuration = DEFAULT_TRANSITION_DURATION,
   enableVibration = false,
   isOptionEqual,
+  validOptionIndex,
   getOptionKey,
   renderLabel,
   renderArrow,
@@ -104,13 +106,82 @@ export function WheelPicker<T>({
     [equals, options],
   )
 
-  const controlledIndex = findIndexByValue(value) // Index derived from controlled value
+  const isSelectableIndex = useCallback(
+    (index: number) => {
+      if (index < 0 || index >= options.length) return false
+      return validOptionIndex ? Boolean(validOptionIndex(index, options[index])) : true
+    },
+    [options, validOptionIndex],
+  )
+
+  const findNextSelectableIndex = useCallback(
+    (startIndex: number, direction: -1 | 1) => {
+      const total = options.length
+      if (!total) return -1
+      let index = startIndex
+      for (let attempt = 0; attempt < total; attempt += 1) {
+        if (isSelectableIndex(index)) return index
+        if (loop) {
+          index = (index + direction + total) % total
+        } else {
+          index += direction
+          if (index < 0 || index >= total) return -1
+        }
+      }
+      return -1
+    },
+    [isSelectableIndex, loop, options.length],
+  )
+
+  const findClosestSelectableIndex = useCallback(
+    (candidateIndex: number) => {
+      const total = options.length
+      if (!total) return -1
+      if (isSelectableIndex(candidateIndex)) return candidateIndex
+      for (let offset = 1; offset < total; offset += 1) {
+        const forward = candidateIndex + offset
+        const backward = candidateIndex - offset
+        if (loop) {
+          const forwardIndex = (forward + total) % total
+          if (isSelectableIndex(forwardIndex)) return forwardIndex
+          const backwardIndex = (backward + total) % total
+          if (isSelectableIndex(backwardIndex)) return backwardIndex
+        } else {
+          if (forward < total && isSelectableIndex(forward)) return forward
+          if (backward >= 0 && isSelectableIndex(backward)) return backward
+        }
+      }
+      return -1
+    },
+    [isSelectableIndex, loop, options.length],
+  )
+
+  const resolveSelectableIndex = useCallback(
+    (candidateIndex: number, direction: -1 | 1 | 0) => {
+      if (!options.length || candidateIndex === -1) return -1
+      const total = options.length
+      const normalized = loop
+        ? ((candidateIndex % total) + total) % total
+        : clamp(candidateIndex, 0, total - 1)
+      if (!validOptionIndex) return normalized
+      if (direction === 1 || direction === -1) {
+        return findNextSelectableIndex(normalized, direction)
+      }
+      return findClosestSelectableIndex(normalized)
+    },
+    [findClosestSelectableIndex, findNextSelectableIndex, loop, options.length, validOptionIndex],
+  )
+
+  const controlledIndex = useMemo(() => {
+    const index = findIndexByValue(value)
+    return resolveSelectableIndex(index, 0)
+  }, [findIndexByValue, resolveSelectableIndex, value])
 
   const fallbackIndex = useMemo(() => {
     if (!options.length) return -1
     const requested = typeof defaultIndex === 'number' ? defaultIndex : 0
-    return clamp(requested, 0, options.length - 1)
-  }, [defaultIndex, options.length])
+    return resolveSelectableIndex(requested, 0)
+  }, [defaultIndex, options.length, resolveSelectableIndex])
 
   const [uncontrolledIndex, setUncontrolledIndex] = useState(fallbackIndex)
 
@@ -125,10 +196,11 @@ export function WheelPicker<T>({
     if (!isControlled) {
       setUncontrolledIndex((prev) => {
         if (!options.length) return -1
-        return clamp(prev === -1 ? 0 : prev, 0, options.length - 1)
+        const candidate = prev === -1 ? 0 : prev
+        return resolveSelectableIndex(candidate, 0)
       })
     }
-  }, [isControlled, options.length])
+  }, [isControlled, options.length, resolveSelectableIndex])
 
   const selectedIndex = useMemo(() => {
     if (isControlled) {
@@ -255,27 +327,58 @@ export function WheelPicker<T>({
       { relative?: boolean; animate?: boolean } = {}) => 
     {
       if (!options.length || value === 0) return
-      const candidateIndex = relative ? selectionRef.current + value : value
-      const total = options.length
-      let next = candidateIndex
-      if (loop && total > 0) {
-        next = ((candidateIndex % total) + total) % total
-      } else {
-        next = clamp(candidateIndex, 0, total - 1)
+      if (relative && validOptionIndex) {
+        const steps = Math.abs(value)
+        const direction = value > 0 ? 1 : -1
+        let next = selectionRef.current
+        for (let i = 0; i < steps; i += 1) {
+          const baseIndex = next === -1 ? (direction === 1 ? 0 : options.length - 1) : next + direction
+          const resolvedStep = findNextSelectableIndex(baseIndex, direction)
+          if (resolvedStep === -1) break
+          next = resolvedStep
+        }
+        if (next === -1 || next === selectionRef.current) return
+        alignColumn(next, animate)
+        selectionRef.current = next
+        if (!isControlled) {
+          setUncontrolledIndex(next)
+        }
+        // Vibration feedback for mobile devices
+        if (enableVibration && typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+          navigator.vibrate(10) // Short 10ms vibration
+        }
+        onChange?.(options[next], next)
+        return
       }
-      if (next === selectionRef.current) return
-      alignColumn(next, animate)
-      selectionRef.current = next
+
+      const candidateIndex = relative ? selectionRef.current + value : value
+      const direction = relative ? Math.sign(value) : Math.sign(candidateIndex - selectionRef.current)
+      const resolved = resolveSelectableIndex(
+        candidateIndex,
+        direction === 0 ? 0 : (direction as -1 | 1),
+      )
+      if (resolved === -1 || resolved === selectionRef.current) return
+      alignColumn(resolved, animate)
+      selectionRef.current = resolved
       if (!isControlled) {
-        setUncontrolledIndex(next)
+        setUncontrolledIndex(resolved)
       }
       // Vibration feedback for mobile devices
       if (enableVibration && typeof navigator !== 'undefined' && 'vibrate' in navigator) {
         navigator.vibrate(10) // Short 10ms vibration
       }
-      onChange?.(options[next], next)
+      onChange?.(options[resolved], resolved)
     },
-    [alignColumn, enableVibration, isControlled, loop, onChange, options],
+    [
+      alignColumn,
+      enableVibration,
+      findNextSelectableIndex,
+      isControlled,
+      onChange,
+      options,
+      resolveSelectableIndex,
+      validOptionIndex,
+    ],
   )
 
   const handleWheel = useCallback(
@@ -288,14 +391,21 @@ export function WheelPicker<T>({
       const { spacing } = measurements
 
       wheelAccumRef.current += event.deltaY * resolvedWheelSensitivity
-      const steps =
+      const rawSteps =
         wheelAccumRef.current > 0
           ? Math.floor(wheelAccumRef.current / spacing)
           : Math.ceil(wheelAccumRef.current / spacing)
-          
+
+      let steps = rawSteps
+      if (validOptionIndex && rawSteps !== 0) {
+        steps = Math.sign(rawSteps)
+        wheelAccumRef.current = 0
+      }
 
       if (steps !== 0) {
-        wheelAccumRef.current -= steps * spacing
+        if (!validOptionIndex) {
+          wheelAccumRef.current -= steps * spacing
+        }
         const now = performance.now()
         const isFastWheel = now - lastWheelEventRef.current < 120 // if less than 120ms since last wheel event, consider it fast
         lastWheelEventRef.current = now
@@ -303,7 +413,7 @@ export function WheelPicker<T>({
         changeSelection(steps, { relative: true, animate })
       }
     },
-    [changeSelection, ensureMeasurements, resolvedWheelSensitivity],
+    [changeSelection, ensureMeasurements, resolvedWheelSensitivity, validOptionIndex],
   )
 
   useEffect(() => {
@@ -326,8 +436,10 @@ export function WheelPicker<T>({
     event.preventDefault()
   }
 
-  const prevDisabled = !loop && (selectedIndex <= 0 || selectedIndex === -1)
-  const nextDisabled = !loop && (selectedIndex === -1 || selectedIndex >= options.length - 1)
+  const prevDisabled =
+    !loop && (selectedIndex === -1 || findNextSelectableIndex(selectedIndex - 1, -1) === -1)
+  const nextDisabled =
+    !loop && (selectedIndex === -1 || findNextSelectableIndex(selectedIndex + 1, 1) === -1)
 
   useEffect(() => {
     if (!draggable) return
